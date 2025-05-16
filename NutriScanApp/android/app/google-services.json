@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "604265048430",
+    "project_id": "inutriscan",
+    "storage_bucket": "inutriscan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604265048430:android:df0921bb308334448ab97f",
+        "android_client_info": {
+          "package_name": "com.nutriscanteam.inutriscan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKZMnh3PR5AXHE6Hjzg6yZXn11kSR8brA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
     "module": "NodeNext",
-    "esModuleInterop": true,
     "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
-    "strict": true,
-    "target": "es2017"
+    "strict": true
   },
   "compileOnSave": true,
   "include": [
     "src"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
