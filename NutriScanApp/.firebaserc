@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "inutriscan-abb77"
-  }
+    "default": "inutriscan",
+    "inutriscan": "inutriscan"
+  },
+  "targets": {},
+  "etags": {}
 }

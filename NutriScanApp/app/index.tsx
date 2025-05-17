@@ -1,29 +1,58 @@
-// app/(tabs)/index.tsx
+// app/index.tsx
 // @aandreu7
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Pressable, Text, View, Image } from 'react-native';
 import { styles } from '@/constants/styles';
+import { auth } from '@/firebaseConfig';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
-import GetRecipe from '@/components/getRecipeScreen'
+import { useAuthListener } from '@/hooks/useAuthListener';
+import { handleLogout } from '@/utils/authHelpers';
+
+import LoginScreen from '@/components/LoginScreen';
+import RegisterScreen from '@/components/RegisterScreen';
+
+import GetRecipe from '@/components/getRecipeScreen';
 // import ViewTimetable from '@/components/viewTimetableScreen'
 // import ScanFood from '@/components/scanFoodScreen'
 // import ConfigurePlan from '@/components/configurePlanScreen'
 
 export default function App() {
   const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
-  const hasScannedRef = useRef(false);
+  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
 
+  const { user, setUser } = useAuthListener();
+
+  if (!user) {
+    return authScreen === 'login' ? (
+      <LoginScreen onSwitchToRegister={() => setAuthScreen('register')} onLoginSuccess={setUser} />
+    ) : (
+      <RegisterScreen onSwitchToLogin={() => setAuthScreen('login')} onRegisterSuccess={setUser} />
+    );
+  }
+
+  {/* If user is logged in, show options. Else, user can either sign up or log in.*/}
   let content;
 
   switch (screen) {
     case 'home':
       content = (
+
+        // Always show logo
         <View style={styles.container}>
           <Image
             source={require('@/assets/images/logo.jpg')}
             style={styles.image}
           />
+
+          {/* Log Out option */}
+          <Text style={{ fontSize: 18, marginVertical: 10 }}>
+            Hello, {user.displayName || user.email}!
+          </Text>
+          <Button title="Log out" color="red" onPress={() => handleLogout(setUser, setAuthScreen)} />
+
+          {/* Main options */}
           <View style={styles.buttonContainer}>
             <Button title="🍽️ Scan Food" onPress={() => setScreen('scanFood')} />
             <Button title="📋 Get a Recipe" onPress={() => setScreen('getRecipe')} />
@@ -34,16 +63,12 @@ export default function App() {
       );
       break;
 
-    /*
-    case 'scanFood':
-        content = <ScanFood onBack={() => setScreen('home')} />;
-        break;
-    */
-
     case 'getRecipe':
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;
-
+    case 'scanFood':
+        content = <ScanFood onBack={() => setScreen('home')} />;
+        break;
     case 'viewTimetable':
       content = <ViewTimetable onBack={() => setScreen('home')} />;
       break;
