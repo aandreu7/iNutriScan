@@ -16,7 +16,7 @@ import RegisterScreen from '@/components/RegisterScreen';
 import GetRecipe from '@/components/getRecipeScreen';
 // import ViewTimetable from '@/components/viewTimetableScreen'
 // import ScanFood from '@/components/scanFoodScreen'
-// import ConfigurePlan from '@/components/configurePlanScreen'
+import ConfigurePlan from '@/components/configurePlanScreen'
 
 export default function App() {
   const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');

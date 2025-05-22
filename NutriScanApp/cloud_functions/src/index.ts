@@ -14,4 +14,6 @@
 // import * as logger from "firebase-functions/logger";
 
 import { createUserDocument } from './register';
-export { createUserDocument };
+import { createANewPlan } from './createPlan';
+
+export { createUserDocument, createANewPlan };

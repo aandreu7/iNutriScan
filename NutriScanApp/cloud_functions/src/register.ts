@@ -2,11 +2,11 @@
 // @aandreu7
 
 import * as functions from 'firebase-functions/v1';
-import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { db } from './firebase';
 
-initializeApp();
-const db = getFirestore();
+/*
+Creates a new document on Firestore when a new user is registered through triggers.
+*/
 
 export const createUserDocument = functions.auth.user().onCreate((user) => {
   const uid = user.uid;
@@ -15,7 +15,7 @@ export const createUserDocument = functions.auth.user().onCreate((user) => {
 
   const userRef = db.collection("users").doc(uid);
   return userRef.set({
-    email,r
+    email,
     name: displayName,
     createdAt: new Date(),
   });
