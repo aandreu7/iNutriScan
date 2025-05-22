@@ -5,13 +5,19 @@ import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
 
+import Constants from 'expo-constants';
+
+const GOOGLE_CLIENT_ID = Constants.expoConfig.extra.GOOGLE_CLIENT_ID;
+const IOS_CLIENT_ID = Constants.expoConfig.extra.IOS_CLIENT_ID;
+const EXPO_CLIENT_ID = Constants.expoConfig.extra.EXPO_CLIENT_ID;
+
 WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleSignInButton({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '604265048430-rut9fhf7mhhptgb06bciid2qpkauqjj4.apps.googleusercontent.com',
-    iosClientId: '604265048430-6ihrkih2sg9tmkuqjav27u17uts31ck2.apps.googleusercontent.com',
-    expoClientId: '604265048430-447gsk7oqod5tbodr5lvb5ds9ats99mt.apps.googleusercontent.com',
+    clientId: GOOGLE_CLIENT_ID,
+    iosClientId: IOS_CLIENT_ID,
+    expoClientId: EXPO_CLIENT_ID,
   });
 
   useEffect(() => {
