@@ -15,7 +15,7 @@ import RegisterScreen from '@/components/RegisterScreen';
 
 import GetRecipe from '@/components/getRecipeScreen';
 // import ViewTimetable from '@/components/viewTimetableScreen'
-// import ScanFood from '@/components/scanFoodScreen'
+ import ScanFood from '@/components/scanFoodScreen'
 import ConfigurePlan from '@/components/configurePlanScreen'
 
 export default function App() {
