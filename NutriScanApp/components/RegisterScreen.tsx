@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, User } from 'firebase/auth';
 import { styles, formStyles } from '@/constants/styles.tsx'
 import { auth } from '@/firebaseConfig';
 
@@ -13,13 +13,20 @@ export default function RegisterScreen({ onSwitchToLogin, onRegisterSuccess }: {
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userName, setUserName] = useState('');
   const [message, setMessage] = useState('');
 
   const handleRegister = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        onRegisterSuccess(userCredential.user);
-        setMessage(`Registered successfully. UID: ${user.uid}`);
+        const user = userCredential.user;
+        return updateProfile(user, {
+          displayName: userName,
+        })
+        .then(() => {
+          onRegisterSuccess(userCredential.user);
+          setMessage('Registered successfully. UID: ${user.uid}, Name: ${userName}');
+         })
       })
       .catch((error) => {
         setMessage(`Error: ${error.message}`);
@@ -36,6 +43,12 @@ export default function RegisterScreen({ onSwitchToLogin, onRegisterSuccess }: {
           onChangeText={setEmail}
           style={formStyles.input}
           autoCapitalize="none"
+        />
+        <TextInput
+          placeholder="Name"
+          value={userName}
+          onChangeText={setUserName}
+          style={formStyles.input}
         />
         <TextInput
           placeholder="Password"

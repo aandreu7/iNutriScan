@@ -6,6 +6,7 @@ import { View, TextInput, Text } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { styles, formStyles } from '@/constants/styles.tsx';
 import { auth } from '@/firebaseConfig';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 export default function LoginScreen({ onSwitchToRegister, onLoginSuccess }: {
   onSwitchToRegister: () => void;
@@ -55,6 +56,7 @@ export default function LoginScreen({ onSwitchToRegister, onLoginSuccess }: {
           </View>
         )}
       </View>
+      <GoogleSignInButton onLoginSuccess={onLoginSuccess} />
       <Text onPress={onSwitchToRegister} style={styles.customButton}>
         Don't have an account? Register here
       </Text>
