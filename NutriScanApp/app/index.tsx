@@ -21,12 +21,21 @@ import ConfigurePlan from '@/components/configurePlanScreen'
 export default function App() {
   const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const { user, setUser } = useAuthListener();
 
+  function handleLogin(user: User, token?: string) {
+    // onLoginSuccess can return just a User or both User and Access Token (in case user is logged in using Google)
+    setUser(user);
+    if (token) {
+      setAccessToken(token);
+    }
+  }
+
   if (!user) {
     return authScreen === 'login' ? (
-      <LoginScreen onSwitchToRegister={() => setAuthScreen('register')} onLoginSuccess={setUser} />
+      <LoginScreen onSwitchToRegister={() => setAuthScreen('register')} onLoginSuccess={handleLogin} />
     ) : (
       <RegisterScreen onSwitchToLogin={() => setAuthScreen('login')} onRegisterSuccess={setUser} />
     );

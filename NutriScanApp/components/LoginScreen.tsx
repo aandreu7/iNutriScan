@@ -8,9 +8,9 @@ import { styles, formStyles } from '@/constants/styles.tsx';
 import { auth } from '@/firebaseConfig';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 
-export default function LoginScreen({ onSwitchToRegister, onLoginSuccess }: {
+export default function LoginScreen({ onSwitchToRegister, onLoginSuccess}: {
   onSwitchToRegister: () => void;
-  onLoginSuccess: (user: User) => void;
+  onLoginSuccess: (user: User, accessToken?: string) => void;
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +19,7 @@ export default function LoginScreen({ onSwitchToRegister, onLoginSuccess }: {
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        onLoginSuccess(userCredential.user);
+        onLoginSuccess(userCredential.user, undefined);
         setMessage(`Logged in successfully. UID: ${user.uid}`);
       })
       .catch((error) => {

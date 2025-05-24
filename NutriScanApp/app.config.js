@@ -7,6 +7,7 @@ export default () => ({
   expo: {
     name: "NutriScanApp",
     slug: "NutriScanApp",
+    owner: "aandreu",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
