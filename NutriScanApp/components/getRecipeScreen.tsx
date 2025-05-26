@@ -1,11 +1,10 @@
 // components/getRecipeScreen.tsx
 // @aandreu7
 
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { styles } from '@/constants/styles';
-import * as FileSystem from 'expo-file-system';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 type Props = {
   onBack: () => void;
@@ -35,7 +34,7 @@ export default function GetRecipe({ onBack }: Props) {
                 image: base64image,
             });
 
-            const response = await fetch("https://extract-food-from-image-604265048430.europe-southwest1.run.app", {
+            const response = await fetch("https://get-recipe-604265048430.europe-southwest1.run.app", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -47,10 +46,15 @@ export default function GetRecipe({ onBack }: Props) {
             console.log("Texto devuelto:", jsonData);
 
 
-          if (response.ok && jsonData) {
-            setServerMessage(`Food items detected: ${jsonData["food_items"].join(', ')}`);
+          if (response.ok && jsonData && jsonData.recipe) {
+            const { title, image, summary } = jsonData.recipe;
+            const cleanSummary = summary ? summary.replace(/<[^>]*>?/gm, '') : '';
+
+            setServerMessage(
+              `🍽️ ${title}\n\n${cleanSummary}\n\n📷 Imagen: ${image}`
+            );
           } else {
-            setServerMessage('Failed to process the image.');
+            setServerMessage("❌ Failed to process the image.");
           }
         } catch (error) {
           console.error('Failed to send photo:', error);
