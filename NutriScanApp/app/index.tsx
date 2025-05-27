@@ -13,9 +13,11 @@ import { handleLogout } from '@/utils/authHelpers';
 import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
+import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
+
 import GetRecipe from '@/components/getRecipeScreen';
-// import ViewTimetable from '@/components/viewTimetableScreen'
- import ScanFood from '@/components/scanFoodScreen'
+import ViewTimetable from '@/components/viewTimetableScreen'
+import ScanFood from '@/components/scanFoodScreen'
 import ConfigurePlan from '@/components/configurePlanScreen'
 
 export default function App() {
@@ -47,27 +49,33 @@ export default function App() {
   switch (screen) {
     case 'home':
       content = (
-
-        // Always show logo
         <View style={styles.container}>
-          <Image
-            source={require('@/assets/images/logo.jpg')}
-            style={styles.image}
-          />
+          <View style={{ alignItems: 'center' }}>
+            <Image
+              source={require('@/assets/images/logo.jpg')}
+              style={[styles.image, { marginBottom: 4 }]}
+            />
+            <Text style={{ fontSize: 18, marginBottom: 0 }}>
+              Hello, {user.displayName || user.email}!
+            </Text>
+          </View>
 
-          {/* Log Out option */}
-          <Text style={{ fontSize: 18, marginVertical: 10 }}>
-            Hello, {user.displayName || user.email}!
-          </Text>
-          <Button title="Log out" color="red" onPress={() => handleLogout(setUser, setAuthScreen)} />
+          <View style={{ marginTop: 0, marginBottom: 0 }}>
+            <Button
+              title="Log out"
+              color="red"
+              onPress={() => handleLogout(setUser, setAuthScreen)}
+            />
+          </View>
 
           {/* Main options */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, { marginTop: 0, marginBottom: 0 }]}>
             <Button title="🍽️ Scan Food" onPress={() => setScreen('scanFood')} />
             <Button title="📋 Get a Recipe" onPress={() => setScreen('getRecipe')} />
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
           </View>
+          <ShowDailyKcalBalance />
         </View>
       );
       break;
@@ -76,10 +84,10 @@ export default function App() {
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;
     case 'scanFood':
-        content = <ScanFood onBack={() => setScreen('home')} />;
+        content = <ScanFood onBack={() => setScreen('home')} userId={user.uid} />;
         break;
     case 'viewTimetable':
-      content = <ViewTimetable onBack={() => setScreen('home')} />;
+      content = <ViewTimetable onBack={() => setScreen('home')} userId={user.uid} />;
       break;
     case 'configurePlan':
       content = <ConfigurePlan onBack={() => setScreen('home')} />;
