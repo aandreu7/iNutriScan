@@ -4,66 +4,70 @@
 import { styles } from '@/constants/styles';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
 type Props = {
   onBack: () => void;
 };
 
 export default function GetRecipe({ onBack }: Props) {
-    const [permission, requestPermission] = useCameraPermissions();
-    const [serverMessage, setServerMessage] = useState<string | null>(null);
-    const [uploading, setUploading] = useState<boolean>(false);
-    const cameraRef = useRef<any>(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [title, setTitle] = useState<string | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const cameraRef = useRef<any>(null);
 
-    useEffect(() => {
-        if (!permission?.granted) {
-          requestPermission();
-        }
-    }, []);
+  useEffect(() => {
+    if (!permission?.granted) {
+      requestPermission();
+    }
+  }, []);
 
-    const takePicture = async () => {
-      if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync({ base64: true });
-        setUploading(true);
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({ base64: true });
+      setUploading(true);
 
-        try {
-            const base64image = photo.base64;
+      try {
+        const base64image = photo.base64;
 
-            const body = JSON.stringify({
-                image: base64image,
-            });
-
-            const response = await fetch("https://get-recipe-604265048430.europe-southwest1.run.app", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ image: base64image }),
-            });
-
-            let jsonData = await response.json();
-            console.log("Texto devuelto:", jsonData);
-
-
-          if (response.ok && jsonData && jsonData.recipe) {
-            const { title, image, summary } = jsonData.recipe;
-            const cleanSummary = summary ? summary.replace(/<[^>]*>?/gm, '') : '';
-
-            setServerMessage(
-              `🍽️ ${title}\n\n${cleanSummary}\n\n📷 Imagen: ${image}`
-            );
-          } else {
-            setServerMessage("❌ Failed to process the image.");
+        const response = await fetch(
+          'https://get-recipe-604265048430.europe-southwest1.run.app',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: base64image }),
           }
-        } catch (error) {
-          console.error('Failed to send photo:', error);
-          setServerMessage('Error sending the photo.');
-        } finally {
-          setUploading(false);
+        );
+
+        let jsonData = await response.json();
+        console.log('Text returned:', jsonData);
+
+        if (response.ok && jsonData && jsonData.recipe) {
+          const { title, image, summary } = jsonData.recipe;
+          const cleanSummary = summary
+            ? summary.replace(/<[^>]*>?/gm, '')
+            : '';
+
+          setTitle(title);
+          setSummary(cleanSummary);
+          setImageUrl(image);
+        } else {
+          setErrorMessage('❌ Failed to process the image.');
         }
+      } catch (error) {
+        console.error('Failed to send photo:', error);
+        setErrorMessage('Error sending the photo.');
+      } finally {
+        setUploading(false);
       }
-    };
+    }
+  };
 
   if (!permission) return <View />;
 
@@ -89,11 +93,46 @@ export default function GetRecipe({ onBack }: Props) {
     );
   }
 
-  // If we already have a response from server, we show it
-  if (serverMessage) {
+  if (errorMessage || title) {
     return (
       <View style={styles.center}>
-        <Text style={styles.message}>{serverMessage}</Text>
+        {title && (
+          <>
+            <Text style={styles.titleText}>🍽️ {title}</Text>
+
+            {imageUrl && (
+              <Image
+                source={{ uri: imageUrl }}
+                style={{
+                  width: 300,
+                  height: 200,
+                  borderRadius: 10,
+                  marginVertical: 10,
+                }}
+                resizeMode="cover"
+              />
+            )}
+
+            {summary && (
+              <Pressable onPress={() => setShowSummary(!showSummary)}>
+                <Text style={styles.toggleText}>
+                  {showSummary ? '🔽 Hide description' : '🔼 Show description'}
+                </Text>
+              </Pressable>
+            )}
+
+            {showSummary && (
+              <Text style={[styles.message, { marginTop: 10 }]}>
+                {summary}
+              </Text>
+            )}
+          </>
+        )}
+
+        {errorMessage && (
+          <Text style={[styles.message, { color: 'red' }]}>{errorMessage}</Text>
+        )}
+
         <Pressable style={styles.customButton} onPress={onBack}>
           <Text style={styles.buttonText}>Back</Text>
         </Pressable>
@@ -101,14 +140,9 @@ export default function GetRecipe({ onBack }: Props) {
     );
   }
 
-  // Opens camera if there is no message yet
   return (
     <View style={{ flex: 1 }}>
-      <CameraView
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        facing="environment"
-      />
+      <CameraView ref={cameraRef} style={{ flex: 1 }} facing="environment" />
       <View style={styles.controls}>
         <Pressable style={styles.customButton} onPress={onBack}>
           <Text style={styles.buttonText}>Back</Text>
