@@ -1,5 +1,5 @@
 // components/getRecipeScreen.tsx
-// @Erdrick2210
+// @aandreu7
 
 import { styles } from '@/constants/styles';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -79,6 +79,9 @@ export default function GetRecipe({ onBack }: Props) {
         </Text>
         <Pressable style={styles.customButton} onPress={requestPermission}>
           <Text style={styles.buttonText}>Grant Permission</Text>
+        </Pressable>
+        <Pressable style={styles.customButton} onPress={onBack}>
+          <Text style={styles.buttonText}>Back</Text>
         </Pressable>
       </View>
     );
