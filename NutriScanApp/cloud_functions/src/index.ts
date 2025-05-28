@@ -15,5 +15,7 @@
 
 import { createUserDocument } from './register';
 import { createANewPlan } from './createPlan';
+import { onExerciseCompleted } from './onExerciseCompleted';
+import { getDailyKcalBalance } from './getDailyKcalBalance';
 
-export { createUserDocument, createANewPlan };
+export { createUserDocument, createANewPlan, onExerciseCompleted, getDailyKcalBalance };

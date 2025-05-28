@@ -42,6 +42,35 @@ export default function PlanForm({ onBack, initialData }: Props) {
     }
   }, [initialData]);
 
+  const calculateKcalGoal = (
+      age: number,
+      height: number,
+      weight: number,
+      sex: 'male' | 'female',
+      target: TargetType
+    ): number => {
+      // BMR with Mifflin-St Jeor
+      const bmr =
+        sex === 'male'
+          ? 10 * weight + 6.25 * height - 5 * age + 5
+          : 10 * weight + 6.25 * height - 5 * age - 161;
+
+    switch (target) {
+      case 'gain_muscle':
+        return Math.round(bmr * 1.2 + 300);
+      case 'lose_fat':
+        return Math.round(bmr * 1.2 - 300);
+      case 'endurance':
+        return Math.round(bmr * 1.4);
+      case 'health':
+        return Math.round(bmr * 1.2);
+      case 'rehab':
+        return Math.round(bmr * 1.1);
+      default:
+        return Math.round(bmr);
+    }
+  };
+
   const handleSubmit = async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -50,6 +79,11 @@ export default function PlanForm({ onBack, initialData }: Props) {
       Alert.alert('Please, fill all fields.');
       return;
     }
+
+    const ageNum = parseInt(age);
+    const heightNum = parseFloat(height);
+    const weightNum = parseFloat(weight);
+    const kcalGoal = calculateKcalGoal(ageNum, heightNum, weightNum, sex, target);
 
     const userRef = doc(db, 'users', user.uid);
 
@@ -60,6 +94,7 @@ export default function PlanForm({ onBack, initialData }: Props) {
         weight: parseFloat(weight),
         sex: sex === 'male', // true = male, false = female
         target,
+        kcal_target: kcalGoal,
       });
 
       Alert.alert('✅ Plan successfully saved.');
@@ -118,9 +153,9 @@ export default function PlanForm({ onBack, initialData }: Props) {
         {[
           { label: 'Gain muscle', value: 'gain_muscle' },
           { label: 'Lose fat', value: 'lose_fat' },
-          { label: 'Improve endurance', value: 'endurance' },
-          { label: 'Stay healthy', value: 'health' },
-          { label: 'Rehabilitation', value: 'rehab' },
+          { label: 'Improve endurance', value: 'improve_endurance' },
+          { label: 'Stay healthy', value: 'stay_healthy' },
+          { label: 'Rehabilitation', value: 'rehabilitation' },
         ].map(({ label, value }) => (
           <View key={value} style={{ marginRight: 10, marginBottom: 5 }}>
             <Button

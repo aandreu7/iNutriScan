@@ -10,9 +10,10 @@ import * as FileSystem from 'expo-file-system';
 
 type Props = {
   onBack: () => void;
+  userId: string;
 };
 
-export default function ScanFood({ onBack }: Props) {
+export default function ScanFood({ onBack, userId }: Props) {
     const [permission, requestPermission] = useCameraPermissions();
     const [serverMessage, setServerMessage] = useState<string | null>(null);
     const [uploading, setUploading] = useState<boolean>(false);
@@ -34,6 +35,7 @@ export default function ScanFood({ onBack }: Props) {
 
             const body = JSON.stringify({
                 image: base64image,
+                user_id: userId,
             });
 
             const response = await fetch("https://extract-nutrients-604265048430.europe-west1.run.app", {
@@ -41,7 +43,7 @@ export default function ScanFood({ onBack }: Props) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ image: base64image }),
+                body: body,
             });
 
             let jsonData = await response.json();

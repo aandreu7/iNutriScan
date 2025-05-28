@@ -68,6 +68,7 @@ export default () => ({
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       IOS_CLIENT_ID: process.env.IOS_CLIENT_ID,
       EXPO_CLIENT_ID: process.env.EXPO_CLIENT_ID,
+      ANDROID_CLIENT_ID: process.env.ANDROID_CLIENT_ID,
       GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
     },
   },

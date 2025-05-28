@@ -7,6 +7,7 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 
 import Constants from 'expo-constants';
 
@@ -30,3 +31,6 @@ export const auth = getAuth(app);
 
 // Initialize Firestore
 export const db = getFirestore(app);
+
+// Gets deployed cloud functions
+export const functions = getFunctions(app);
