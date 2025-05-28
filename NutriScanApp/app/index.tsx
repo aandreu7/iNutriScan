@@ -13,15 +13,12 @@ import { handleLogout } from '@/utils/authHelpers';
 import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
-<<<<<<< Updated upstream
-=======
 import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
 import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
 
->>>>>>> Stashed changes
 import GetRecipe from '@/components/getRecipeScreen';
-// import ViewTimetable from '@/components/viewTimetableScreen'
- import ScanFood from '@/components/scanFoodScreen'
+import ViewTimetable from '@/components/viewTimetableScreen'
+import ScanFood from '@/components/scanFoodScreen'
 import ConfigurePlan from '@/components/configurePlanScreen'
 
 export default function App() {
@@ -78,8 +75,6 @@ export default function App() {
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
           </View>
-<<<<<<< Updated upstream
-=======
 
           {/*
               Only ask Google Permissions if user is logged in with a Google account.
@@ -91,7 +86,6 @@ export default function App() {
 
           <ShowDailyKcalBalance />
 
->>>>>>> Stashed changes
         </View>
       );
       break;
@@ -99,10 +93,10 @@ export default function App() {
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;
     case 'scanFood':
-        content = <ScanFood onBack={() => setScreen('home')} />;
+      content = <ScanFood onBack={() => setScreen('home')} userId={user.uid} />
         break;
     case 'viewTimetable':
-      content = <ViewTimetable onBack={() => setScreen('home')} />;
+      content = <ViewTimetable onBack={() => setScreen('home')} userId={user.uid} />;
       break;
     case 'configurePlan':
       content = <ConfigurePlan onBack={() => setScreen('home')} />;
