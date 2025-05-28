@@ -1,11 +1,10 @@
 // app/index.tsx
 // @aandreu7
 
-import { useEffect, useRef, useState } from 'react';
-import { Alert, Button, Pressable, Text, View, Image } from 'react-native';
 import { styles } from '@/constants/styles';
-import { auth } from '@/firebaseConfig';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { User } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { Button, Image, Text, View } from 'react-native';
 
 import { useAuthListener } from '@/hooks/useAuthListener';
 import { handleLogout } from '@/utils/authHelpers';
@@ -13,16 +12,17 @@ import { handleLogout } from '@/utils/authHelpers';
 import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
-import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
 import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
+import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
 
+import ConfigurePlan from '@/components/configurePlanScreen';
 import GetRecipe from '@/components/getRecipeScreen';
-import ViewTimetable from '@/components/viewTimetableScreen'
-import ScanFood from '@/components/scanFoodScreen'
-import ConfigurePlan from '@/components/configurePlanScreen'
+import ScanFood from '@/components/scanFoodScreen';
+import ShowTodayFitData from '@/components/showTodayFitData';
+import ViewTimetable from '@/components/viewTimetableScreen';
 
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
+  const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | 'configurePlan' | 'showFitData'>('home');
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [googleUser, setGoogleUser] = useState(false); // Becomes true if user is logged in with its Google account
@@ -74,6 +74,7 @@ export default function App() {
             <Button title="📋 Get a Recipe" onPress={() => setScreen('getRecipe')} />
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
+            <Button title="📊 Show Today Fit Data" onPress={() => setScreen('showFitData')} />
           </View>
 
           {/*
@@ -101,7 +102,9 @@ export default function App() {
     case 'configurePlan':
       content = <ConfigurePlan onBack={() => setScreen('home')} />;
       break;
-
+    case 'showFitData':
+      content = <ShowTodayFitData onBack={() => setScreen('home')} accessToken={accessToken} userId={user.uid} />;
+      break;
     default:
       content = (
         <View style={styles.container}>
