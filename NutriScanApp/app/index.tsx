@@ -13,6 +13,12 @@ import { handleLogout } from '@/utils/authHelpers';
 import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
+<<<<<<< Updated upstream
+=======
+import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
+import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
+
+>>>>>>> Stashed changes
 import GetRecipe from '@/components/getRecipeScreen';
 // import ViewTimetable from '@/components/viewTimetableScreen'
  import ScanFood from '@/components/scanFoodScreen'
@@ -22,15 +28,19 @@ export default function App() {
   const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [googleUser, setGoogleUser] = useState(false); // Becomes true if user is logged in with its Google account
 
   const { user, setUser } = useAuthListener();
-
-  function handleLogin(user: User, token?: string) {
-    // onLoginSuccess can return just a User or both User and Access Token (in case user is logged in using Google)
-    setUser(user);
-    if (token) {
-      setAccessToken(token);
+  useEffect(() => {
+    if (googleUser && accessToken) {
+      console.log("ACCESS TOKEN: ", accessToken);
     }
+  }, [accessToken, googleUser]);
+
+
+  function handleLogin(user: User, isGoogleUser: boolean) {
+    setUser(user);
+    setGoogleUser(isGoogleUser);
   }
 
   if (!user) {
@@ -68,10 +78,23 @@ export default function App() {
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
           </View>
+<<<<<<< Updated upstream
+=======
+
+          {/*
+              Only ask Google Permissions if user is logged in with a Google account.
+              This button allows user to grant permissions so as to use user's Google private data.
+          */}
+          {googleUser && !accessToken && (
+            <GoogleAccessTokenButton onAccessToken={setAccessToken} />
+          )}
+
+          <ShowDailyKcalBalance />
+
+>>>>>>> Stashed changes
         </View>
       );
       break;
-
     case 'getRecipe':
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;

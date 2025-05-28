@@ -10,7 +10,7 @@ import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 export default function LoginScreen({ onSwitchToRegister, onLoginSuccess}: {
   onSwitchToRegister: () => void;
-  onLoginSuccess: (user: User, accessToken?: string) => void;
+  onLoginSuccess: (user: User, isGoogleUser: boolean) => void;
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +19,7 @@ export default function LoginScreen({ onSwitchToRegister, onLoginSuccess}: {
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        onLoginSuccess(userCredential.user, undefined);
+        onLoginSuccess(userCredential.user, false);
         setMessage(`Logged in successfully. UID: ${user.uid}`);
       })
       .catch((error) => {
