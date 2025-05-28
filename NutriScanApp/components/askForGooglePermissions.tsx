@@ -18,14 +18,14 @@ const ANDROID_CLIENT_ID = Constants.expoConfig.extra.ANDROID_CLIENT_ID;
 export default function GoogleAccessTokenButton({ onAccessToken }: { onAccessToken: (accessToken: string) => void }) {
 
   const redirectUri = AuthSession.makeRedirectUri({
-    //useProxy: false,
-    scheme: 'nutriscanapp',
+    useProxy: true, // TURN FALSE FOR BUILDING
+    //scheme: 'nutriscanapp', // UNCOMMENT FOR BUILDING
   });
 
   const [accessRequest, accessResponse, promptAccessTokenAsync] = Google.useAuthRequest({
-    clientId: ANDROID_CLIENT_ID,
+    clientId: EXPO_CLIENT_ID, // USE ANDROID_CLIENT_ID INSTEAD FOR BUILDING
     iosClientId: IOS_CLIENT_ID,
-    redirectUri,
+    //redirectUri, // UNCOMMENT FOR BUILDING
     scopes: ['https://www.googleapis.com/auth/calendar'],
     responseType: 'token',
   });

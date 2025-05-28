@@ -25,21 +25,21 @@ type Props = {
 export default function GoogleSignInButton({ onLoginSuccess }: Props) {
 
   const redirectUri = AuthSession.makeRedirectUri({
-    //useProxy: false,
-    scheme: 'nutriscanapp',
+    useProxy: true, // TURN FALSE FOR BUILDING
+    //scheme: 'nutriscanapp', // UNCOMMENT FOR BUILDING
   });
 
   // This hook asks for ID Token (user's identity)
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: ANDROID_CLIENT_ID,
+    clientId: EXPO_CLIENT_ID, // USE ANDROID_CLIENT_ID INSTEAD FOR BUILDING
     iosClientId: IOS_CLIENT_ID,
-    redirectUri,
+    //redirectUri, // UNCOMMENT FOR BUILDING
     scopes: ['openid', 'profile', 'email'],
   });
 
   const handleGoogleSignIn = async () => {
     try {
-      const idTokenResult = await promptAsync({ useProxy: false });
+      const idTokenResult = await promptAsync({ useProxy: true }); // TURN FALSE FOR BUILDING
 
       if (idTokenResult?.type === 'success') {
         const { id_token } = idTokenResult.params;
