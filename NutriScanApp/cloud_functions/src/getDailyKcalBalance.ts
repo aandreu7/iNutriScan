@@ -16,11 +16,13 @@ export const getDailyKcalBalance = functions.https.onCall(async (data, context) 
   const userId = context.auth.uid;
   const userDocRef = db.collection('users').doc(userId);
 
+  // FIXING NEEDED HERE !!!!!!!
   try {
     const todayDate = new Date().toISOString().slice(0, 10);
 
     const userCollections = await userDocRef.listCollections();
 
+    // IT DETECTS COLLECTIONS FROM PAST DAYS. FIX.
     const todayCollection = userCollections.find(col => col.id.startsWith(todayDate));
 
     let consumedKcal = 0;

@@ -14,6 +14,7 @@ import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
 import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
+import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
 
 import GetRecipe from '@/components/getRecipeScreen';
 import ViewTimetable from '@/components/viewTimetableScreen'
@@ -24,15 +25,19 @@ export default function App() {
   const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [googleUser, setGoogleUser] = useState(false); // Becomes true if user is logged in with its Google account
 
   const { user, setUser } = useAuthListener();
-
-  function handleLogin(user: User, token?: string) {
-    // onLoginSuccess can return just a User or both User and Access Token (in case user is logged in using Google)
-    setUser(user);
-    if (token) {
-      setAccessToken(token);
+  useEffect(() => {
+    if (googleUser && accessToken) {
+      console.log("ACCESS TOKEN: ", accessToken);
     }
+  }, [accessToken, googleUser]);
+
+
+  function handleLogin(user: User, isGoogleUser: boolean) {
+    setUser(user);
+    setGoogleUser(isGoogleUser);
   }
 
   if (!user) {
@@ -49,42 +54,46 @@ export default function App() {
   switch (screen) {
     case 'home':
       content = (
-        <View style={styles.container}>
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              source={require('@/assets/images/logo.jpg')}
-              style={[styles.image, { marginBottom: 4 }]}
-            />
-            <Text style={{ fontSize: 18, marginBottom: 0 }}>
-              Hello, {user.displayName || user.email}!
-            </Text>
-          </View>
 
-          <View style={{ marginTop: 0, marginBottom: 0 }}>
-            <Button
-              title="Log out"
-              color="red"
-              onPress={() => handleLogout(setUser, setAuthScreen)}
-            />
-          </View>
+        // Always show logo
+        <View style={styles.container}>
+          <Image
+            source={require('@/assets/images/logo.jpg')}
+            style={styles.image}
+          />
+
+          {/* Log Out option */}
+          <Text style={{ fontSize: 18, marginVertical: 10 }}>
+            Hello, {user.displayName || user.email}!
+          </Text>
+          <Button title="Log out" color="red" onPress={() => handleLogout(setUser, setAuthScreen)} />
 
           {/* Main options */}
-          <View style={[styles.buttonContainer, { marginTop: 0, marginBottom: 0 }]}>
+          <View style={styles.buttonContainer}>
             <Button title="🍽️ Scan Food" onPress={() => setScreen('scanFood')} />
             <Button title="📋 Get a Recipe" onPress={() => setScreen('getRecipe')} />
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
           </View>
+
+          {/*
+              Only ask Google Permissions if user is logged in with a Google account.
+              This button allows user to grant permissions so as to use user's Google private data.
+          */}
+          {googleUser && !accessToken && (
+            <GoogleAccessTokenButton onAccessToken={setAccessToken} />
+          )}
+
           <ShowDailyKcalBalance />
+
         </View>
       );
       break;
-
     case 'getRecipe':
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;
     case 'scanFood':
-        content = <ScanFood onBack={() => setScreen('home')} userId={user.uid} />;
+      content = <ScanFood onBack={() => setScreen('home')} userId={user.uid} />
         break;
     case 'viewTimetable':
       content = <ViewTimetable onBack={() => setScreen('home')} userId={user.uid} />;
