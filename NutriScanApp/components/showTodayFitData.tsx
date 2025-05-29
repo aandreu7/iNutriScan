@@ -10,6 +10,7 @@ import { Button, Pressable, Text, View } from 'react-native';
 
 type Props = {
   onBack: () => void;
+  userId: string;
 };
 
 WebBrowser.maybeCompleteAuthSession();
@@ -34,7 +35,7 @@ function getValue(dataset: any) {
   return value.fpVal || value.intVal || 0;
 }
 
-export default function GoogleAccessTokenButton({ onBack }: Props) {
+export default function GoogleAccessTokenButton({ onBack, userId }: Props) {
   const [accessRequest, accessResponse, promptAccessTokenAsync] = Google.useAuthRequest({
     clientId: EXPO_CLIENT_ID,
     iosClientId: IOS_CLIENT_ID,
@@ -59,7 +60,7 @@ export default function GoogleAccessTokenButton({ onBack }: Props) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ access_token: accessToken }),
+        body: JSON.stringify({ access_token: accessToken, user_id: userId }),
       });
 
       if (!res.ok) {
