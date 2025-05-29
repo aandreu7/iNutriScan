@@ -22,7 +22,7 @@ export const getDailyKcalBalance = functions.https.onCall(async (data, context) 
 
     const userCollections = await userDocRef.listCollections();
 
-    // IT DETECTS COLLECTIONS FROM PAST DAYS. FIX.
+    // IT DETECTS COLLECTIONS FROM PAST DAYS.
     const todayCollection = userCollections.find(col => col.id.startsWith(todayDate));
 
     let consumedKcal = 0;

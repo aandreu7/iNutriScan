@@ -24,11 +24,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginBottom: 30,
+    marginBottom: 0,
   },
   container: {
     flex: 1,
@@ -37,7 +37,18 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 32,
     backgroundColor: '#f2f2f2',
-    gap: 20,
+    gap: 10,
+  },
+  containerPlan: {
+    padding: 20,
+    backgroundColor: '#f7f7f7',
+    flex: 1,
+  },
+  containerCenteredPage: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   buttonContainer: {
     flexDirection: 'column',
@@ -137,6 +148,17 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
+  cardGoogleFit: {
+    backgroundColor: '#f2f2f2',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
   day: {
     fontSize: 18,
     fontWeight: '700',
@@ -217,6 +239,23 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#cf1322',
   },
+  header: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 12,
+    color: '#555',
+  },
+  value: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#222',
+  }
 });
 
 export const formStyles = StyleSheet.create({

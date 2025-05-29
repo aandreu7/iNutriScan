@@ -2,8 +2,9 @@
 // @aandreu7
 
 import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import PlanForm from './PlanForm';
+import { styles } from '@/constants/styles';
 
 type Props = {
   plan: any;
@@ -29,21 +30,34 @@ export default function ViewPlan({ plan, onBack, reloadPlan }: Props) {
   }
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 18 }}>🎯 Your current target:</Text>
-      <Text style={{ marginTop: 10, fontSize: 16 }}>{plan.target}</Text>
-      <Text style={{ marginTop: 10 }}>Age: {plan.age}</Text>
-      <Text>Weight: {plan.weight} kg</Text>
-      <Text>Height: {plan.height} cm</Text>
-      <Text>Sex: {plan.sex ? 'Male' : 'Female'}</Text>
+    <View style={styles.containerPlan}>
+      <Text style={styles.header}>Your Plan</Text>
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Edit plan" onPress={() => setEditing(true)} />
+      <View style={styles.card}>
+        <Text style={styles.label}>🎯 Target</Text>
+        <Text style={styles.value}>{plan.target}</Text>
+
+        <Text style={styles.label}>🧓 Age</Text>
+        <Text style={styles.value}>{plan.age} years</Text>
+
+        <Text style={styles.label}>⚖️ Weight</Text>
+        <Text style={styles.value}>{plan.weight} kg</Text>
+
+        <Text style={styles.label}>📏 Height</Text>
+        <Text style={styles.value}>{plan.height} cm</Text>
+
+        <Text style={styles.label}>🧬 Sex</Text>
+        <Text style={styles.value}>{plan.sex ? 'Male ♂️' : 'Female ♀️'}</Text>
       </View>
 
-      <View style={{ marginTop: 10 }}>
-        <Button title="Go back" onPress={onBack} />
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
+          <Button title="✏️ Edit plan" onPress={() => setEditing(true)} />
+        </View>
+        <View style={styles.button}>
+          <Button title="⬅️ Go back" onPress={onBack} color="#666" />
+        </View>
       </View>
     </View>
   );
-};
+}

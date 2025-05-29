@@ -1,12 +1,10 @@
 // components/scanFoodScreen.tsx
 // @aandreu7
 
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { styles } from '@/constants/styles';
-import { ScrollView } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 type Props = {
   onBack: () => void;
@@ -99,6 +97,9 @@ export default function ScanFood({ onBack, userId }: Props) {
         </Text>
         <Pressable style={styles.customButton} onPress={requestPermission}>
           <Text style={styles.buttonText}>Grant Permission</Text>
+        </Pressable>
+        <Pressable style={styles.customButton} onPress={onBack}>
+          <Text style={styles.buttonText}>Back</Text>
         </Pressable>
       </View>
     );
