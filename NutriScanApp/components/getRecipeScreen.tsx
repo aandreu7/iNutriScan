@@ -1,5 +1,5 @@
 // components/getRecipeScreen.tsx
-// @aandreu7
+// @Erdrick2210
 
 import { styles } from '@/constants/styles';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -18,7 +18,9 @@ export default function GetRecipe({ onBack }: Props) {
   const [showSummary, setShowSummary] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [ttsLoading, setTtsLoading] = useState(false);
   const cameraRef = useRef<any>(null);
+  const audioRef = useRef<any>(null);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -66,6 +68,36 @@ export default function GetRecipe({ onBack }: Props) {
       } finally {
         setUploading(false);
       }
+    }
+  };
+
+  const playSummaryTTS = async () => {
+    if (!summary || ttsLoading) return;
+    setTtsLoading(true);
+    try {
+      // Atura i descarrega l'àudio anterior si existeix
+      if (audioRef.current) {
+        await audioRef.current.stopAsync();
+        await audioRef.current.unloadAsync();
+        audioRef.current = null;
+      }
+      const response = await fetch('https://read-recipe-604265048430.europe-southwest1.run.app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: summary }),
+      });
+      const data = await response.json();
+      if (data.audio_base64) {
+        const { Audio } = require('expo-av');
+        const soundObject = new Audio.Sound();
+        await soundObject.loadAsync({ uri: `data:audio/mp3;base64,${data.audio_base64}` });
+        audioRef.current = soundObject;
+        await soundObject.playAsync();
+      }
+    } catch (error) {
+      console.error('Error playing TTS:', error);
+    } finally {
+      setTtsLoading(false);
     }
   };
 
@@ -122,9 +154,23 @@ export default function GetRecipe({ onBack }: Props) {
             )}
 
             {showSummary && (
-              <Text style={[styles.message, { marginTop: 10 }]}>
-                {summary}
-              </Text>
+              <>
+                <Text style={[styles.message, { marginTop: 10 }]}>
+                  {summary}
+                </Text>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.customButton,
+                    (pressed || ttsLoading) && { opacity: 0.5 }
+                  ]}
+                  onPress={playSummaryTTS}
+                  disabled={ttsLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {ttsLoading ? 'Loading audio...' : '🔊 Listen to summary'}
+                  </Text>
+                </Pressable>
+              </>
             )}
           </>
         )}
