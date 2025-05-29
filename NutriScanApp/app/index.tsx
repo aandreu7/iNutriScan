@@ -17,12 +17,15 @@ import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
 import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
 
 import GetRecipe from '@/components/getRecipeScreen';
+import AddActivity from '@/components/addActivityScreen';
 import ViewTimetable from '@/components/viewTimetableScreen'
 import ScanFood from '@/components/scanFoodScreen'
 import ConfigurePlan from '@/components/configurePlanScreen'
+import ShowTodayFitData from '@/components/showTodayFitData';
 
 export default function App() {
-  const [screen, setScreen] = useState<'home' | 'getRecipe' | 'viewTimetable' | 'scanFood' | "configurePlan">('home');
+  const [screen, setScreen] = useState<'home' | 'getRecipe' | 'addActivity' | 'viewTimetable' |
+    'showFitData' | 'scanFood' | "configurePlan">('home');
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [googleUser, setGoogleUser] = useState(false); // Becomes true if user is logged in with its Google account
@@ -56,7 +59,7 @@ export default function App() {
       content = (
 
         // Always show logo
-        <View style={styles.container}>
+        <View style={[styles.container, { marginTop: 0 }]}>
           <Image
             source={require('@/assets/images/logo.jpg')}
             style={styles.image}
@@ -71,8 +74,10 @@ export default function App() {
           {/* Main options */}
           <View style={styles.buttonContainer}>
             <Button title="🍽️ Scan Food" onPress={() => setScreen('scanFood')} />
+            <Button title="💪 Add Activity" onPress={() => setScreen('addActivity')} />
             <Button title="📋 Get a Recipe" onPress={() => setScreen('getRecipe')} />
             <Button title="📅 View your Timetable" onPress={() => setScreen('viewTimetable')} />
+            <Button title="📊 Show Today Fit Data" onPress={() => setScreen('showFitData')} />
             <Button title="⚙️ Configure a plan" onPress={() => setScreen('configurePlan')} />
           </View>
 
@@ -92,16 +97,21 @@ export default function App() {
     case 'getRecipe':
       content = <GetRecipe onBack={() => setScreen('home')} />;
       break;
+    case 'addActivity':
+      content = <AddActivity onBack={() => setScreen('home')} userId={user.uid} />
+      break;
     case 'scanFood':
       content = <ScanFood onBack={() => setScreen('home')} userId={user.uid} />
-        break;
+      break;
     case 'viewTimetable':
       content = <ViewTimetable onBack={() => setScreen('home')} userId={user.uid} />;
       break;
     case 'configurePlan':
       content = <ConfigurePlan onBack={() => setScreen('home')} />;
       break;
-
+    case 'showFitData':
+      content = <ShowTodayFitData onBack={() => setScreen('home')} accessToken={accessToken} userId={user.uid} />;
+      break;
     default:
       content = (
         <View style={styles.container}>

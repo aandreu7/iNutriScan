@@ -1,10 +1,11 @@
 // components/getRecipeScreen.tsx
 // @Erdrick2210
+// @damiapro8
 
 import { styles } from '@/constants/styles';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Text, View, ScrollView } from 'react-native';
 
 type Props = {
   onBack: () => void;
@@ -18,7 +19,9 @@ export default function GetRecipe({ onBack }: Props) {
   const [showSummary, setShowSummary] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [ttsLoading, setTtsLoading] = useState(false);
   const cameraRef = useRef<any>(null);
+  const audioRef = useRef<any>(null);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -69,6 +72,36 @@ export default function GetRecipe({ onBack }: Props) {
     }
   };
 
+  const playSummaryTTS = async () => {
+    if (!summary || ttsLoading) return;
+    setTtsLoading(true);
+    try {
+      // Stops and downloads previous audio if exists
+      if (audioRef.current) {
+        await audioRef.current.stopAsync();
+        await audioRef.current.unloadAsync();
+        audioRef.current = null;
+      }
+      const response = await fetch('https://read-recipe-604265048430.europe-southwest1.run.app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: summary }),
+      });
+      const data = await response.json();
+      if (data.audio_base64) {
+        const { Audio } = require('expo-av');
+        const soundObject = new Audio.Sound();
+        await soundObject.loadAsync({ uri: `data:audio/mp3;base64,${data.audio_base64}` });
+        audioRef.current = soundObject;
+        await soundObject.playAsync();
+      }
+    } catch (error) {
+      console.error('Error playing TTS:', error);
+    } finally {
+      setTtsLoading(false);
+    }
+  };
+
   if (!permission) return <View />;
 
   if (!permission.granted) {
@@ -95,7 +128,7 @@ export default function GetRecipe({ onBack }: Props) {
 
   if (errorMessage || title) {
     return (
-      <View style={styles.center}>
+      <ScrollView contentContainerStyle={styles.center}>
         {title && (
           <>
             <Text style={styles.titleText}>🍽️ {title}</Text>
@@ -122,9 +155,23 @@ export default function GetRecipe({ onBack }: Props) {
             )}
 
             {showSummary && (
-              <Text style={[styles.message, { marginTop: 10 }]}>
-                {summary}
-              </Text>
+              <>
+                <Text style={[styles.message, { marginTop: 10 }]}>
+                  {summary}
+                </Text>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.customButton,
+                    (pressed || ttsLoading) && { opacity: 0.5 }
+                  ]}
+                  onPress={playSummaryTTS}
+                  disabled={ttsLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {ttsLoading ? 'Loading audio...' : '🔊 Listen to summary'}
+                  </Text>
+                </Pressable>
+              </>
             )}
           </>
         )}
@@ -136,7 +183,7 @@ export default function GetRecipe({ onBack }: Props) {
         <Pressable style={styles.customButton} onPress={onBack}>
           <Text style={styles.buttonText}>Back</Text>
         </Pressable>
-      </View>
+      </ScrollView>
     );
   }
 
