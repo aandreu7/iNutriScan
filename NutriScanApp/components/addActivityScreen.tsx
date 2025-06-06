@@ -130,6 +130,10 @@ export default function AddActivity({ onBack, userId }: Props) {
             </View>
           )}
 
+          <Text style={{ fontSize: 14, color: '#555', marginTop: 8, marginBottom: 20, textAlign: 'center' }}>
+            Explain to us everything you have done today, and we will tell you how well you did!
+          </Text>
+
           <Pressable style={[styles.customButton, { backgroundColor: '#aaa' }]} onPress={onBack}>
             <Text style={styles.buttonText}>Go back</Text>
           </Pressable>
