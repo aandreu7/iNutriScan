@@ -66,7 +66,7 @@ export default function ShowDailyKcalBalance() {
       <Text style={styles.balanceText}>Consumed: {consumedKcal} kcal</Text>
       <Text style={styles.balanceText}>Burnt: {burntKcal} kcal</Text>
       <Text style={[styles.balanceAmount, isSurplus ? styles.surplusText : styles.deficitText]}>
-        {isSurplus ? 'Surplus!' : 'Deficit!'} of {Math.abs(kcalTarget - (consumedKcal - burntKcal))} kcal
+        {isSurplus ? 'Surplus!' : 'Deficit!'} of {Math.abs(kcalTarget + Math.abs(consumedKcal - burntKcal))} kcal
       </Text>
     </View>
   );
