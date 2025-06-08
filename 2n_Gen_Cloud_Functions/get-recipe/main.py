@@ -3,7 +3,7 @@ from flask import Request, jsonify
 import os
 import requests
 
-# Environment variables
+# Load environment variables
 EXTRACT_FOOD_URL = os.environ.get("EXTRACT_FOOD_FROM_IMAGE_URL")
 SPOONACULAR_API_KEY = os.environ["SPOONACULAR_API_KEY"]
 SPOONACULAR_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch"
@@ -11,13 +11,14 @@ SPOONACULAR_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch"
 @functions_framework.http
 def get_recipe(request: Request):
     try:
+        # Parse and validate request body
         data = request.get_json()
         if not data or 'image' not in data:
             return jsonify({"error": "Missing 'image' in request"}), 400
 
         image_base64 = data['image']
 
-        # 1. Calls extract_food_from_image
+        # 1. Calls extract_food_from_image cloud function
         resp = requests.post(EXTRACT_FOOD_URL, json={"image": image_base64})
         if resp.status_code != 200:
             return jsonify({"error": "Error calling extract_food_from_image cloud function", "details": resp.text}), 500
@@ -36,12 +37,13 @@ def get_recipe(request: Request):
         if response.status_code != 200:
             return jsonify({"error": f"Spoonacular API error: {response.text}"}), 500
 
+        # Return first recipe or fallback
         data = response.json()
         results = data.get("results", [])
         if not results:
             return jsonify({"recipe": None, "message": "No recipes found"}), 200
 
-        recipe = results[0]
+        recipe = results[0] # Get the top match
         result = {
             "id": recipe.get("id"),
             "title": recipe.get("title"),
@@ -52,4 +54,5 @@ def get_recipe(request: Request):
         return jsonify({"recipe": result}), 200
 
     except Exception as e:
+        # # Catch and return any server-side error
         return jsonify({"error": str(e)}), 500
