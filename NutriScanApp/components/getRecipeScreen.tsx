@@ -11,6 +11,13 @@ type Props = {
   onBack: () => void;
 };
 
+/*
+  GetRecipe Component
+  - Requests camera permission and captures a photo.
+  - Sends the captured image to a backend for OCR and recipe detection.
+  - Displays the returned recipe title, image, and summary.
+  - Optionally reads the summary aloud using a TTS (Text-to-Speech) service.
+*/
 export default function GetRecipe({ onBack }: Props) {
   const [permission, requestPermission] = useCameraPermissions();
   const [title, setTitle] = useState<string | null>(null);
@@ -23,12 +30,14 @@ export default function GetRecipe({ onBack }: Props) {
   const cameraRef = useRef<any>(null);
   const audioRef = useRef<any>(null);
 
+  // Asks for camera permission
   useEffect(() => {
     if (!permission?.granted) {
       requestPermission();
     }
   }, []);
 
+  // Take picture and send it to the backend for recipe extraction
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync({ base64: true });
@@ -72,6 +81,7 @@ export default function GetRecipe({ onBack }: Props) {
     }
   };
 
+  // Play the summary using Text-to-Speech
   const playSummaryTTS = async () => {
     if (!summary || ttsLoading) return;
     setTtsLoading(true);
@@ -102,8 +112,10 @@ export default function GetRecipe({ onBack }: Props) {
     }
   };
 
+  // If user has not given permission, then do nothing
   if (!permission) return <View />;
 
+  // Prompt user to grant permission
   if (!permission.granted) {
     return (
       <View style={styles.container}>
@@ -117,6 +129,7 @@ export default function GetRecipe({ onBack }: Props) {
     );
   }
 
+  // Show loading state while photo is uploading
   if (uploading) {
     return (
       <View style={styles.center}>
@@ -126,6 +139,7 @@ export default function GetRecipe({ onBack }: Props) {
     );
   }
 
+  // Show result or error message if available
   if (errorMessage || title) {
     return (
       <ScrollView contentContainerStyle={styles.center}>
@@ -187,6 +201,7 @@ export default function GetRecipe({ onBack }: Props) {
     );
   }
 
+  // Default view: show camera and controls
   return (
     <View style={{ flex: 1 }}>
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing="environment" />

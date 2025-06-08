@@ -25,6 +25,15 @@ type TargetType =
   | 'rehab'
   | '';
 
+/*
+  PlanForm Component
+
+  - Allows users to input personal data (age, height, weight, sex, goal).
+  - Pre-fills form if initialData is provided.
+  - Calculates daily calorie goal using Mifflin-St Jeor formula.
+  - Saves data and kcal goal to Firestore on submit.
+  - Provides a simple UI with input fields and goal selection buttons.
+*/
 export default function PlanForm({ onBack, initialData }: Props) {
   const [age, setAge] = useState('');
   const [height, setHeight] = useState('');
@@ -32,6 +41,7 @@ export default function PlanForm({ onBack, initialData }: Props) {
   const [sex, setSex] = useState<'male' | 'female' | ''>('');
   const [target, setTarget] = useState<TargetType>(null);
 
+  // Pre-fills form if initialData is provided.
   useEffect(() => {
     if (initialData) {
       if (initialData.age) setAge(initialData.age.toString());
@@ -42,6 +52,7 @@ export default function PlanForm({ onBack, initialData }: Props) {
     }
   }, [initialData]);
 
+  // Calculates daily calorie goal using Mifflin-St Jeor formula.
   const calculateKcalGoal = (
       age: number,
       height: number,
@@ -85,6 +96,7 @@ export default function PlanForm({ onBack, initialData }: Props) {
     const weightNum = parseFloat(weight);
     const kcalGoal = calculateKcalGoal(ageNum, heightNum, weightNum, sex, target);
 
+    // Saves data and kcal goal to Firestore on submit.
     const userRef = doc(db, 'users', user.uid);
 
     try {
@@ -105,6 +117,8 @@ export default function PlanForm({ onBack, initialData }: Props) {
     }
   };
 
+  // Allows users to input personal data (age, height, weight, sex, goal).
+  // Provides a simple UI with input fields and goal selection buttons.
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 20, marginBottom: 10 }}>Set up your nutrition plan</Text>

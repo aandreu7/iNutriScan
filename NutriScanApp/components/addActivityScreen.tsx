@@ -12,13 +12,22 @@ type Props = {
   userId: string;
 };
 
+/*
+  AddActivity Component
+
+  - Handles audio recording using Expo Audio to capture user activity description.
+  - Sends audio to Cloud Functions backend for processing and receives a summary (description + kcal).
+  - Manages microphone permissions.
+*/
 export default function AddActivity({ onBack, userId }: Props) {
     const [permissionResponse, requestPermission] = Audio.usePermissions();
     const [recording, setRecording] = useState();
     const [answer, setAnswer] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Handles audio recording using Expo Audio to capture user activity description.
     async function startRecording() {
+        // Asks for permission
         try {
           if (permissionResponse?.status !== 'granted') {
             console.log('Requesting permission..');
@@ -67,6 +76,7 @@ export default function AddActivity({ onBack, userId }: Props) {
       }
     }
 
+    // Sends audio to Cloud Functions backend for processing and receives a summary (description + kcal).
     const handleDiagnosis = async () => {
       try {
         if (!recording) {

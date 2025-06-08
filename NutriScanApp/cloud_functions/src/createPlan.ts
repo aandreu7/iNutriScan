@@ -5,7 +5,7 @@ import * as functions from 'firebase-functions/v1';
 import { db } from './firebase';
 
 /*
-Creates new fields on user's document when a new plan is configured through triggers.
+Creates new fields on user's document when a new plan is configured. Function automatically executed using Firestore triggers.
 */
 
 export const createANewPlan = functions.firestore
@@ -14,17 +14,22 @@ export const createANewPlan = functions.firestore
     const beforeData = change.before.data();
     const afterData = change.after.data();
 
+    // Check if any relevant user fields changed: target, weight or height
     const targetChanged = beforeData?.target !== afterData?.target;
     const weightChanged = beforeData?.weight !== afterData?.weight;
     const heightChanged = beforeData?.height !== afterData?.height;
 
+    // If no field has changed, then is not necessary to do anything
     if (!targetChanged && !weightChanged && !heightChanged) {
       return null;
     }
 
+    // If at least one field has changed, then we have to update the user's Firestore document
     const userId = context.params.userId;
     const target = afterData.target;
     const userDocRef = db.collection('users').doc(userId);
+
+    // Extract user info for adapting exercises
     const userInfo = {
       weight: afterData.weight,
       height: afterData.height,
@@ -33,6 +38,7 @@ export const createANewPlan = functions.firestore
     };
 
     try {
+      // Retrieve exercise plan for the user's target
       const planDoc = await db.collection('plans').doc(target).get();
 
       if (!planDoc.exists) {
@@ -44,11 +50,14 @@ export const createANewPlan = functions.firestore
       const exercises = Object.entries(planData || {});
       let fullExerciseString = '';
 
+      // Adapt each exercise based on user's info and concatenate results
       for (const [exerciseName, baseParams] of exercises) {
         const adaptedParams = adaptExerciseParams(baseParams as string, userInfo);
         fullExerciseString += `${exerciseName} ${adaptedParams}\n`;
       }
 
+      // All exercises assigned to user are descripted in a single string
+      // Update user's document with the generated exercise plan string
       await userDocRef.update({
         exercise_plan_string: fullExerciseString.trim(),
       });
@@ -69,6 +78,7 @@ function adaptExerciseParams(base: string, user: { weight: number; height: numbe
   let adaptedReps = reps;
   let adaptedIntensity = intensity;
 
+  // Modify intensity and reps based on user's age
   if (user.age < 25) {
     adaptedIntensity *= 1.2;
     adaptedReps += 1;
@@ -77,10 +87,15 @@ function adaptExerciseParams(base: string, user: { weight: number; height: numbe
     adaptedReps -= 1;
   }
 
+  // Adjust intensity for sex
+  // Naming convention:
+  // Female --> False
+  // Male --> True
   if (user.sex === false) {
     adaptedIntensity *= 0.94;
   }
 
+  // Calculate BMI to adjust parameters further
   const heightInMeters = user.height / 100;
   const bmi = user.weight / (heightInMeters * heightInMeters);
 
@@ -116,6 +131,7 @@ function adaptExerciseParams(base: string, user: { weight: number; height: numbe
   }
 
   // === Final corrections ===
+  // Ensure reps and minutes are reasonable integers
   adaptedReps = Math.max(1, Math.round(adaptedReps));
   adaptedMinutes = Math.max(1, Math.round(adaptedMinutes));
 
@@ -129,11 +145,14 @@ function adaptExerciseParams(base: string, user: { weight: number; height: numbe
     discreteIntensity = 3; // high
   }
 
+  // Estimate calories burned based on adapted parameters
   const kcal = estimateKcal(adaptedMinutes, discreteIntensity, user);
   return `${adaptedMinutes}/${adaptedReps}/${discreteIntensity}/${kcal}/n`;
 }
 
+// Estimate kcal burned based on exercise duration, intensity and user's weight
 function estimateKcal(duration: number, intensity: number, user: { weight: number; height: number; age: number; sex: boolean }): number {
+  // MET values roughly mapped to intensity levels
   const metBase = intensity === 1 ? 3 : intensity === 2 ? 5 : 8;
   const kcalPerMinute = (metBase * 3.5 * user.weight) / 200;
   const totalKcal = kcalPerMinute * duration;

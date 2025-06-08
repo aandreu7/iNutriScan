@@ -23,6 +23,14 @@ type Exercise = {
 
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+/*
+  ViewTimetable Component
+
+  - Fetches and parses user's weekly exercise plan from Firestore.
+  - Displays exercises in a scrollable view, one per day.
+  - Allows users to mark exercises as completed, updating Firestore.
+  - Shows loading indicator during data fetch and disables actions while updating.
+*/
 export default function ViewTimetable({ onBack, userId }: Props) {
   const [loading, setLoading] = useState(true);
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -30,6 +38,7 @@ export default function ViewTimetable({ onBack, userId }: Props) {
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
+    // Fetches and parses user's weekly exercise plan from Firestore.
     const fetchPlan = async () => {
       try {
         const docRef = doc(db, 'users', userId);
@@ -111,6 +120,7 @@ export default function ViewTimetable({ onBack, userId }: Props) {
     );
   }
 
+  // Displays exercises in a scrollable view, one per day.
   return (
     <View style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -129,6 +139,7 @@ export default function ViewTimetable({ onBack, userId }: Props) {
                   Duration: {exercise.duration} min | Sets: {exercise.sets} | Intensity: {exercise.intensity} | Approx. Kcal: {exercise.kcal}
                 </Text>
 
+                { /* Allows users to mark exercises as completed, updating Firestore. */ }
                 {!exercise.completed && (
                     <TouchableOpacity
                       style={[styles.doneButton, updating && { backgroundColor: '#ccc' }]}

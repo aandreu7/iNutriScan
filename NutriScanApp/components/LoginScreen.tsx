@@ -8,6 +8,15 @@ import { styles, formStyles } from '@/constants/styles.tsx';
 import { auth } from '@/firebaseConfig';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 
+/*
+  LoginScreen Component
+
+  - Provides a simple login form with email and password inputs.
+  - Handles login via Firebase Authentication using email/password.
+  - Displays status messages for success or error.
+  - Includes a GoogleSignInButton component for Google-based login.
+  - Offers a link to switch to the registration screen.
+*/
 export default function LoginScreen({ onSwitchToRegister, onLoginSuccess}: {
   onSwitchToRegister: () => void;
   onLoginSuccess: (user: User, isGoogleUser: boolean) => void;

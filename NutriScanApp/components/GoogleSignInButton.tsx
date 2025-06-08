@@ -22,6 +22,14 @@ type Props = {
   onLoginSuccess: (user: User, isGoogleUser: boolean) => void;
 };
 
+/*
+  GoogleAccessTokenButton Component
+  - Initiates OAuth flow using Expo AuthSession and Google provider.
+  - Requests access to Google Calendar API and retrieves an access token.
+  - Passes the access token to parent via onAccessToken callback.
+  - Handles platform-specific client IDs and uses proxy during development.
+*/
+
 export default function GoogleSignInButton({ onLoginSuccess }: Props) {
 
   const redirectUri = AuthSession.makeRedirectUri({

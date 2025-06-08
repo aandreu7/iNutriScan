@@ -13,6 +13,14 @@ type Props = {
   onBack: () => void;
 };
 
+/*
+  ConfigurePlan Component
+  - Checks if the current user has a nutritional plan saved in Firestore.
+  - Loads user data from Firestore and determines whether a plan exists.
+  - Shows a loading indicator while fetching data.
+  - Renders either the ViewPlan component (if a plan exists) or the PlanForm component (if not).
+*/
+
 export default function ConfigurePlan({ onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [hasPlan, setHasPlan] = useState<boolean | null>(null);
@@ -22,6 +30,8 @@ export default function ConfigurePlan({ onBack }: Props) {
     const user = auth.currentUser;
     if (!user) return;
 
+    // Checks if the current user has a nutritional plan saved in Firestore.
+    // Loads user data from Firestore (if exists).
     try {
       const userDocRef = doc(db, 'users', user.uid);
       const docSnap = await getDoc(userDocRef);
