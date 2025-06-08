@@ -12,6 +12,11 @@ type Props = {
   reloadPlan: () => Promise<void>;
 };
 
+/*
+  ViewPlan Component
+  - Receives user's plan from ConfigurePlan component and shows it.
+*/
+
 export default function ViewPlan({ plan, onBack, reloadPlan }: Props) {
   const [editing, setEditing] = useState(false);
 

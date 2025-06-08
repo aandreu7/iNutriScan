@@ -15,9 +15,11 @@ export default function ShowDailyKcalBalance() {
     kcalTarget: number;
   }>(null);
 
+  // Fetch the daily calorie balance from Firebase on component mount
   useEffect(() => {
     const fetchBalance = async () => {
       try {
+        // Call getDailyKcalBalance Cloud Function
         const getBalance = httpsCallable(functions, 'getDailyKcalBalance');
         const result = await getBalance();
         setBalanceInfo(result.data as any);
@@ -29,9 +31,10 @@ export default function ShowDailyKcalBalance() {
       }
     };
 
-    fetchBalance();
+    fetchBalance(); // Trigger fetch
   }, []);
 
+  // Display loading spinner while waiting for data
   if (loading) {
     return (
       <View style={styles.balanceCard}>
@@ -41,6 +44,7 @@ export default function ShowDailyKcalBalance() {
     );
   }
 
+  // If the request failed or no data was returned
   if (!balanceInfo) {
     return (
       <View style={styles.balanceCard}>
@@ -49,16 +53,17 @@ export default function ShowDailyKcalBalance() {
     );
   }
 
+  // Destructure the calorie-related data from the response
   const { burntKcal, kcalTarget, consumedKcal } = balanceInfo;
 
-  // This needs to be fixed!!!!!!
-  // consumedKcal = consumedKcal == null ? 0 : consumedKcal
-
+  // Determine whether the user is in a surplus (consumed more than needed)
   const isSurplus = kcalTarget < consumedKcal - burntKcal;
 
+  // If the target is 0 (no plan has been configured), don't render anything
   if (kcalTarget==0) {
     return;
   }
+
   return (
     <View style={[styles.balanceCard, isSurplus ? styles.surplusCard : styles.deficitCard]}>
       <Text style={styles.balanceTitle}>Today's balance</Text>

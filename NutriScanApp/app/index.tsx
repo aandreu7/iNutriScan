@@ -14,8 +14,6 @@ import LoginScreen from '@/components/LoginScreen';
 import RegisterScreen from '@/components/RegisterScreen';
 
 import ShowDailyKcalBalance from '@/components/showDailyKcalBalance';
-import GoogleAccessTokenButton from '@/components/askForGooglePermissions';
-
 import GetRecipe from '@/components/getRecipeScreen';
 import AddActivity from '@/components/addActivityScreen';
 import ViewTimetable from '@/components/viewTimetableScreen'

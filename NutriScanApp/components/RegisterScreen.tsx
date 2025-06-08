@@ -7,6 +7,15 @@ import { createUserWithEmailAndPassword, updateProfile, User } from 'firebase/au
 import { styles, formStyles } from '@/constants/styles.tsx'
 import { auth } from '@/firebaseConfig';
 
+/*
+  RegisterScreen Component
+
+  - Provides a registration form with inputs for email, username, and password.
+  - Creates a new user in Firebase Authentication with email and password.
+  - Updates the user's profile with the provided display name.
+  - Displays status messages on successful registration or errors.
+  - Includes a link to switch to the login screen.
+*/
 export default function RegisterScreen({ onSwitchToLogin, onRegisterSuccess }: {
   onSwitchToLogin: () => void;
   onRegisterSuccess: (user: User) => void;
@@ -16,6 +25,7 @@ export default function RegisterScreen({ onSwitchToLogin, onRegisterSuccess }: {
   const [userName, setUserName] = useState('');
   const [message, setMessage] = useState('');
 
+  // Handles register
   const handleRegister = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -33,6 +43,7 @@ export default function RegisterScreen({ onSwitchToLogin, onRegisterSuccess }: {
       });
   };
 
+  // Shows register form
   return (
     <View style={styles.center}>
       <View style={formStyles.formContainer}>

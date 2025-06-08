@@ -13,6 +13,7 @@ type Props = {
   userId: string;
 };
 
+// Ensures the browser session is correctly completed if redirected from Google auth
 WebBrowser.maybeCompleteAuthSession();
 
 const GOOGLE_CLIENT_ID = Constants.expoConfig.extra.GOOGLE_CLIENT_ID;
@@ -20,12 +21,15 @@ const IOS_CLIENT_ID = Constants.expoConfig.extra.IOS_CLIENT_ID;
 const EXPO_CLIENT_ID = Constants.expoConfig.extra.EXPO_CLIENT_ID;
 const ANDROID_CLIENT_ID = Constants.expoConfig.extra.ANDROID_CLIENT_ID;
 
+// Cloud Function endpoint that will handle the fitness data retrieval
 const CLOUD_FUNCTION_URL = 'https://activity-tracker-604265048430.europe-southwest1.run.app';
 
+// Converts milliseconds to a readable date string
 function millisToDate(ms: number): string {
   return new Date(ms).toLocaleDateString();
 }
 
+// Extracts the numeric value from a Google Fit dataset
 function getValue(dataset: any) {
   if (!dataset.point || dataset.point.length === 0) return 0;
 
@@ -35,6 +39,7 @@ function getValue(dataset: any) {
   return value.fpVal || value.intVal || 0;
 }
 
+// Hook for Google authentication request
 export default function GoogleAccessTokenButton({ onBack, userId }: Props) {
   const [accessRequest, accessResponse, promptAccessTokenAsync] = Google.useAuthRequest({
     clientId: EXPO_CLIENT_ID,
@@ -51,8 +56,10 @@ export default function GoogleAccessTokenButton({ onBack, userId }: Props) {
     responseType: 'token',
   });
 
+  // State to store the fetched daily fitness data
   const [dailyData, setDailyData] = useState<any[]>([]);
 
+  // Function to call the Cloud Function backend with the access token
   const callActivityTracker = async (accessToken: string) => {
     try {
       const res = await fetch(CLOUD_FUNCTION_URL, {
@@ -72,6 +79,7 @@ export default function GoogleAccessTokenButton({ onBack, userId }: Props) {
       const json = await res.json();
       const buckets = json.bucket || [];
 
+      // Process each bucket to extract and format fitness data
       const processed = buckets.map((bucket: any) => {
         const date = millisToDate(parseInt(bucket.startTimeMillis));
         const steps = getValue(bucket.dataset.find((d: any) => d.dataSourceId.includes('step_count')));
@@ -89,6 +97,7 @@ export default function GoogleAccessTokenButton({ onBack, userId }: Props) {
     }
   };
 
+  // Trigger the OAuth2 flow and request an access token
   const handleAccessTokenRequest = async () => {
     console.log("👉 handleAccessTokenRequest has been called");
     try {

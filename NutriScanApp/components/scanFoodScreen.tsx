@@ -11,18 +11,29 @@ type Props = {
   userId: string;
 };
 
+/*
+  ScanFood Component
+
+  - Requests camera permission and opens the device's camera.
+  - Captures an image and sends it (as base64) to a cloud function for nutrient extraction.
+  - Displays a nutrient breakdown and total summary for the detected food.
+  - Handles loading, permission states, and server response.
+  - Simple and interactive UI with buttons to go back or capture food again.
+*/
 export default function ScanFood({ onBack, userId }: Props) {
     const [permission, requestPermission] = useCameraPermissions();
     const [serverMessage, setServerMessage] = useState<string | null>(null);
     const [uploading, setUploading] = useState<boolean>(false);
     const cameraRef = useRef<any>(null);
 
+    // Asks for permission to use user's camera
     useEffect(() => {
         if (!permission?.granted) {
           requestPermission();
         }
     }, []);
 
+    // Allows user to take a picture and send it to extract-nutrients Cloud Function
     const takePicture = async () => {
       if (cameraRef.current) {
         const photo = await cameraRef.current.takePictureAsync({ base64: true });
@@ -36,6 +47,7 @@ export default function ScanFood({ onBack, userId }: Props) {
                 user_id: userId,
             });
 
+            // Sends taken picture to extract-nutrients Cloud Function
             const response = await fetch("https://extract-nutrients-604265048430.europe-west1.run.app", {
                 method: 'POST',
                 headers: {
@@ -47,6 +59,7 @@ export default function ScanFood({ onBack, userId }: Props) {
             let jsonData = await response.json();
             console.log("Response:", jsonData);
 
+            // Shows results
             if (response.ok && jsonData) {
               const total = jsonData.total_nutrients;
               const breakdown = jsonData.breakdown;
